@@ -10,13 +10,14 @@ procedure extern find_device( 4 x, 4 y)
 procedure pageKernel ()
 	  	     [4 RAMlim, 4 UPbase, 4 LPbase, 4 LPlim, 4 num]
 {
+	#Currently and unused local
 	(= &RAMlim (find_device(2, 1)))
 	(= &RAMlim *RAMlim)
 
 	(= &UPbase (memAlloc(1024)))
 	(= &LPbase (memAlloc(1024)))
 
-	#store the pointer to the kernel's upper page table 
+	#Store the pointer to the kernel's upper page table in the statics
 	#(and lower page table, for convenient access for other processes)in the statics
 	asm("	SUBUS	%FP	%FP 8
 		COPY  *+kernel_Upper_Page_Table *%FP
@@ -25,24 +26,24 @@ procedure pageKernel ()
 		ADDUS	%FP	%FP 12") 
 
 	(= *UPbase &LPbase)
-	(= &LPlim (+ &LPbase 1023)
-	#how many metadata bits
-	(= &num 0000011100)
+	(= &LPlim (+ &LPbase 1024)
+	
+	#Initialize num to 
+	(= &num 000000011111)
 
-	while(< &LPbase &LPlim){
-#Do we want to set the rwx bits in the 12 latter bits in the LPT now?
-#If so, where is the order of the bits specified?
-		(= *LPbase &num)
-		(= &num (+ &num 10000000000))
-		(= &LPbase (+ &num &LPBase))
-		}
+	while(< LPbase LPlim){
+
+		(= &LPbase num)
+		(= &num (+ num 10000000000))
+		(= &LPbase (+ LPbase 4))
+	
+	}
 
 #Does setting the page table register automatically begin paging, or do we need to jump modes somehow?
 #How should we reference a variable we have created in the k code in an assembly injection?
 asm("SUBUS %FP %FP 8
      SETPTR  *%FP
-     JUMPMD +jump 4 #virtual addressing turned on by which bit? This should either be a 2 or a 4
-jump:	")
-return
-    
+     JUMPMD +jump c #virtual addressing turned on by which bit? This should either be a 2 or a 4
+jump: ADDUS %FP %FP 8")
+
 }
