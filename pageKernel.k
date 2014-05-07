@@ -39,7 +39,10 @@ procedure pageKernel ()
 
 #Does setting the page table register automatically begin paging, or do we need to jump modes somehow?
 #How should we reference a variable we have created in the k code in an assembly injection?
-asm("SETPTR	UPbase)
+asm("SUBUS %FP %FP 8
+     SETPTR  *%FP
+     JUMPMD +jump 4 #virtual addressing turned on by which bit? This should either be a 2 or a 4
+jump:	")
+return
     
-
 }
