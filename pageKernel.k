@@ -25,8 +25,8 @@ procedure pageKernel ()
 		COPY  *+kernel_Lower_Page_Table	*%FP
 		ADDUS	%FP	%FP 12") 
 
-	(= *UPbase &LPbase)
-	(= &LPlim (+ &LPbase 1024)
+	(= *UPbase LPbase)
+	(= &LPlim (+ LPbase 1024)
 	
 	#Initialize num to 
 	(= &num 000000011111)
