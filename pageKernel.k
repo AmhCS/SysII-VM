@@ -14,18 +14,26 @@ procedure pageKernel ()
 	(= &RAMlim *RAMlim)
 
 	(= &UPbase (memAlloc(1024)))
-	asm("COPY  *+kernel_Page_Table UPbase") 
 	(= &LPbase (memAlloc(1024)))
+
+	#store the pointer to the kernel's upper page table 
+	#(and lower page table, for convenient access for other processes)in the statics
+	asm("	SUBUS	%FP	%FP 8
+		COPY  *+kernel_Upper_Page_Table *%FP
+		SUBUS	%FP	%FP 4
+		COPY  *+kernel_Lower_Page_Table	*%FP
+		ADDUS	%FP	%FP 12") 
 
 	(= *UPbase &LPbase)
 	(= &LPlim (+ &LPbase 1023)
-	(= &num 0)
+	#how many metadata bits
+	(= &num 0000011100)
 
 	while(< &LPbase &LPlim){
 #Do we want to set the rwx bits in the 12 latter bits in the LPT now?
 #If so, where is the order of the bits specified?
 		(= *LPbase &num)
-		(= &num (+ &num 1))
+		(= &num (+ &num 10000000000))
 		(= &LPbase (+ &num &LPBase))
 		}
 
