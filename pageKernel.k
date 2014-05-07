@@ -14,24 +14,24 @@ procedure pageKernel ()
 	(= &RAMlim (find_device(2, 1)))
 	(= &RAMlim *RAMlim)
 
-	(= &UPbase (memAlloc(1024)))
-	(= &LPbase (memAlloc(1024)))
+	(= &UPbase (allocator(1024)))#upp pg t
+	(= &LPbase (allocator(1024)))
 
 	#Store the pointer to the kernel's upper page table in the statics
 	#(and lower page table, for convenient access for other processes)in the statics
 	asm("	SUBUS	%FP	%FP 8
-		COPY  *+kernel_Upper_Page_Table *%FP
+		COPY  *+kernel_Upper_Page_Table *%FP#put these in kernel as statics
 		SUBUS	%FP	%FP 4
 		COPY  *+kernel_Lower_Page_Table	*%FP
 		ADDUS	%FP	%FP 12") 
 
-	(= *UPbase LPbase)
-	(= &LPlim (+ LPbase 1024)
+	(= *UPbase LPbase)#copy to u
+	(= &LPlim (+ LPbase 1024)#limit
 	
 	#Initialize num to 
-	(= &num 000000011111)
+	(= &num 0000000011111)#meta12 mapped resident r/w k r/w proc rtol
 
-	while(< LPbase LPlim){
+	while(< LPbase LPlim){ #through lpt, 0 and 12 into so 1,12 2,12 
 
 		(= &LPbase num)
 		(= &num (+ num 10000000000))
@@ -41,7 +41,7 @@ procedure pageKernel ()
 
 #Does setting the page table register automatically begin paging, or do we need to jump modes somehow?
 #How should we reference a variable we have created in the k code in an assembly injection?
-asm("SUBUS %FP %FP 8
+asm("SUBUS %FP %FP 8#upt off stack
      SETPTR  *%FP
      JUMPMD +jump c #virtual addressing turned on by which bit? This should either be a 2 or a 4
 jump: ADDUS %FP %FP 8")
