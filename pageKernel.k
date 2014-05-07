@@ -10,7 +10,7 @@ procedure extern find_device( 4 x, 4 y)
 procedure pageKernel ()
 	  	     [4 RAMlim, 4 UPbase, 4 LPbase, 4 LPlim, 4 num]
 {
-	#Currently and unused local
+	#Currently an unused local
 	(= &RAMlim (find_device(2, 1)))
 	(= &RAMlim *RAMlim)
 
