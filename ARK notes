@@ -1,0 +1,10 @@
+The kernel is paged!
+I have added to Terri and Connor's kernel:
+  A procedure called page_the_kernel that creates the page table for the kernel and changes mode to being paging.
+  I also added a _procedure_mem_alloc, that allocates memory on the kernel's heap using the stack for locals and parameters
+  And a procedure called _procedure_special_mem_alloc, that will allocate space in the heap in a aligned manner.  The lower page tables are checked for permission bits so they must be aligned.
+  There are two statics now called *+kernel_Upper_Page_Table and *+kernel_Lower_Page_Table that point to both the upper and the lower page tables.
+  The value at kernel_Upper_Page_Table, the upper pointer, when followed, holds the pointer to the lower page table.
+  
+I noticed that the kernel enters what seems to be an infinite loop, though I am not sure why.  If you run the simulator for about 5300 steps and check the registers you will see that paging is on and the simulator will still run normally.
+I will also upload my kernel and bios, both working with the paging as well.  When you run my kernel you'll reach a halt because the code still tries to setbs and setlim for the next process, init.
