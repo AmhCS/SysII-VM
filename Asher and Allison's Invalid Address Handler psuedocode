@@ -1,0 +1,35 @@
+InvalidAddressHandler()
+	for each register copy into statics	// preserve registers
+	interrupt_address = value at ib_space + 4	// second word of interrupt buffer
+	FindEntry (interrupt_address)	// returns two words
+	       // entry_address = 1st word, address of PT entry
+	       // LPT_present = 2nd word, boolean value
+	if LPT_present = 0	// LPT exists, entry_address is in LPT
+		if value at entry_address != 0
+			exit
+		entry_value = NewEntry ()	// returns value to place in new entry
+		Copy entry_value into entry_address
+	else	// LPT doesn’t exist, entry_address = UPT entry that will point to new LPT
+		LPT_address = NewLPT()	// returns address of first entry in LPT
+		Copy LPT_address into entry_address	// assign pointer to LPT from UPT
+		correct_entry = WalkLPT(LPT_address, interrupt_address)	// returns correct entry in new LPT
+		entry_value = NewEntry()
+		Copy entry_value into correct_entry
+
+NewEntry()
+	to_return = NextPage()	// returns address of new page
+	Copy 0 into bit 0 of to_return	// valid
+	Copy 1 into bit 1 of to_return	// present
+	Copy 0 into bits 2-4 of to_return	// rwx for supervisor mode
+	Copy 1 into bits 5-7 of to_return	// rwx for user mode
+	Copy 0 into bit 8 of to_return	// referenced
+	Copy 0 into bit 9 of to_return	// dirty
+	// bits 10-11 are unused
+	Return to_return
+
+NewLPT()
+	free_space = allocator(4096)	// returns address of allocated space
+		// procedure is already written in kernel, might only work for the process table though
+	For each byte from free_space to free_space + 4096
+		Set byte to 0	// set offsets to 0
+	Return free_space
