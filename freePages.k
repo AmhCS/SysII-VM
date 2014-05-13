@@ -1,4 +1,5 @@
 #Teddy Seem, Alex Kang, Thais Correia
+# add READ.ME
 
 var 4 start_pageList
 var 4 hold_thisPage
@@ -39,7 +40,7 @@ procedure 4 NextPage()[4 current_pointer]{
 
 
 	(= &current_pointer start_pageList)
-	while((not(== current_pointer(*(4)start_pageList)))){
+	while(not(== current_pointer *(4)start_pageList)){
                 (= current_pointer 0)
                (= &current_pointer (+ current_pointer 4))
   }
