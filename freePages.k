@@ -11,6 +11,7 @@ procedure 0 InitializePageList(4 fsp 4 pNum)
 # Page aligned, have to make some dead space
 # Add 1 to first twenty bits, then make last 12 bits 0
 
+#If page-aligned, don't do this
 (= &fsp (>> fsp 12))
 (= &fsp (+ fsp 1))
 (= &fsp (<< fsp 12))
@@ -19,14 +20,15 @@ procedure 0 InitializePageList(4 fsp 4 pNum)
 #Loop through until we've reserved pNum pages
 (= &iterator 1)
    while((not(== iterator pNum))) {
-                 (= &fsp (+ fsp 4096)) #Store in the beginning of this page, the base of the next page
-                (= &fsp_next (+ fsp 4096))
-                (= fsp fsp_next)
-                (= &fsp fsp_next)
+
+								(= &fsp_next (+ fsp 4096))#Store in the beginning of this page, the base of the next page
+								(= fsp fsp_next)
+								(= &fsp fsp_next)
         
                 (= &iterator (+ iterator 1))#Increment iterator/ We've added one more page
         }
-(= *(4)fsp 0) #Pointer is now at the last page, so make the first thing in that page 0 to signify that it's the last page
+
+(= fsp 0) #Pointer is now at the last page, so make the first thing in that page 0 to signify that it's the last page
 
 
 }
@@ -35,17 +37,19 @@ procedure 0 InitializePageList(4 fsp 4 pNum)
 procedure 4 NextPage()[4 current_pointer]{
 # need to give a free page to the kernel and take it off the linked list. before giving it to the kernel need to wipe it. 
 
-  (= &current_pointer start_pageList)
-  (= &hold_thisPage start_pageList)
-  (= &current_pointer *(4)current_pointer)
-  (= &start_pageList current_pointer)
-  (= &current_pointer hold_thisPage)
-  while((not(== current_pointer (+ hold_thisPage 1024)))){
+
+	(= &current_pointer start_pageList)
+	while((not(== current_pointer(*(4)start_pageList)))){
                 (= current_pointer 0)
                (= &current_pointer (+ current_pointer 4))
   }
 
-  return hold_thisPage
+	(= &current_pointer start_pageList)
+	(= &start_pageList *(4)start_pageList)
+
+	
+
+  return current_pointer
 
 }
 
