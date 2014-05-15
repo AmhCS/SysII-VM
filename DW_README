@@ -1,0 +1,23 @@
+The file containing my code is DW_kernel.asm
+
+Here's the breakdown of what I added to the kernel to implement Kernel_Size and to get the stack and heap set up to play nicely with paging:
+
+I added statics Ker_size and Ker_b. Make sure those get copied over when you implement my code.
+
+I added new code that falls in the block from label __start to label null_ih. To implement my code, you can simply paste over the old kernel code between those labels the code in DW_kernel.asm between those labels. This code does the following:
+
+Determines how many pages are necessary for kernel code.
+
+Adds 5 to this number to give the kernel 5 pages for heap and stack, and sets this as a static value to be returned by Kernel_Size.
+
+Initializes the stack to the limit of the kernel pagespace (so it's at the end of the final page of kernel space).
+
+Initializes the heap to the base of kernel heap pagespace (that is, the base of the page following the last page of kernel code).
+
+Makes sure all heap allocations are made in accordance with the above change.
+
+Makes a function Kernel_Size that returns the number of pages to allocate for the kernel. Read my .asm code for this function for the specifics on how to call it (although I assume they are consistent with how K code works, I've never used K code).
+
+Let me know if you have any questions!
+
+--Daniel Webber
