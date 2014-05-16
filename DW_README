@@ -16,7 +16,7 @@ Initializes the heap to the base of kernel heap pagespace (that is, the base of 
 
 Makes sure all heap allocations are made in accordance with the above change.
 
-Makes a function Kernel_Size that returns the number of pages to allocate for the kernel. Read my .asm code for this function for the specifics on how to call it (although I assume they are consistent with how K code works, I've never used K code).
+Makes a function Kernel_Size that returns the number of pages to allocate for the kernel. Read my .asm code for this function for the specifics on how to call it (although I assume they are consistent with how K code works, I've never used K code). Kernel code should be able to access kernel size just by directly accessing the static Ker_size, but the function can be used if for some reason necessary.
 
 Let me know if you have any questions!
 
